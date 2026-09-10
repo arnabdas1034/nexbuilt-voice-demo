@@ -22,7 +22,10 @@ fictional clinic. Every booking made here is fake.
 | Text-to-speech | `flux-priya-en` (Flux v2, Indian English, female) |
 | LLM | `gpt-4o-mini` via Deepgram's managed OpenAI |
 | Database | Supabase (Postgres only, no auth) |
-| Hosting | Vercel |
+| Hosting | Vercel, auto-deploying from `master` |
+
+Pushing to `master` deploys to production automatically. No deploy token is
+needed, and none is stored in the repo.
 
 ---
 
