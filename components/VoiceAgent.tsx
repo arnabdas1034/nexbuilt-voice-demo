@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AgentProvider,
   useAgentClientTool,
-  useAgentControls,
   useAgentConversation,
   useAgentMicrophone,
   useAgentMode,
@@ -66,7 +65,6 @@ function Session({ bookings, latestReference, onBooking }: SessionProps) {
   const { conversation, sendUserMessage } = useAgentConversation();
   const { micMuted, setMicMuted, getInputVolume } = useAgentMicrophone();
   const { outputMuted, setOutputMuted, getOutputVolume } = useAgentPlayer();
-  const { interrupt } = useAgentControlsSafe();
 
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -190,8 +188,6 @@ function Session({ bookings, latestReference, onBooking }: SessionProps) {
             outputMuted={outputMuted}
             onToggleMic={() => setMicMuted(!micMuted)}
             onToggleOutput={() => setOutputMuted(!outputMuted)}
-            onInterrupt={interrupt}
-            speaking={micState === "speaking"}
           />
         </div>
 
@@ -225,9 +221,26 @@ function Session({ bookings, latestReference, onBooking }: SessionProps) {
             <p className="truncate text-[14px] font-semibold text-ink">
               {micState === "idle" ? `Call ${clinic.name}` : LABEL_SHORT[micState]}
             </p>
-            <p className="truncate text-[12px] text-muted">
-              {micState === "idle" ? "Tap to talk to Priya" : "Tap the square to end"}
-            </p>
+            {micState === "idle" ? (
+              <p className="truncate text-[12px] text-muted">Tap to talk to Priya</p>
+            ) : (
+              <div className="mt-1 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setMicMuted(!micMuted)}
+                  className="rounded-pill border border-line px-2.5 py-1 text-[11px] text-muted"
+                >
+                  {micMuted ? "Unmute mic" : "Mute mic"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOutputMuted(!outputMuted)}
+                  className="rounded-pill border border-line px-2.5 py-1 text-[11px] text-muted"
+                >
+                  {outputMuted ? "Unmute" : "Mute"}
+                </button>
+              </div>
+            )}
           </div>
           <MicButton
             compact
@@ -256,16 +269,12 @@ function Controls({
   outputMuted,
   onToggleMic,
   onToggleOutput,
-  onInterrupt,
-  speaking,
 }: {
   active: boolean;
   micMuted: boolean;
   outputMuted: boolean;
   onToggleMic: () => void;
   onToggleOutput: () => void;
-  onInterrupt?: () => void;
-  speaking: boolean;
 }) {
   if (!active) return null;
   const cls =
@@ -278,17 +287,6 @@ function Controls({
       <button type="button" onClick={onToggleOutput} className={cls}>
         {outputMuted ? "Unmute speaker" : "Mute speaker"}
       </button>
-      {speaking && onInterrupt && (
-        <button type="button" onClick={onInterrupt} className={cls}>
-          Interrupt
-        </button>
-      )}
     </div>
   );
-}
-
-/** useAgentControls exposes extras; tolerate it not having interrupt. */
-function useAgentControlsSafe(): { interrupt?: () => void } {
-  const controls = useAgentControls() as unknown as { interrupt?: () => void };
-  return { interrupt: controls.interrupt };
 }
