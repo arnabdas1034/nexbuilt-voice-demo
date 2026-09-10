@@ -174,7 +174,7 @@ function Session({ bookings, latestReference, onBooking }: SessionProps) {
         : "idle";
 
   return (
-    <div className="mx-auto grid w-full max-w-6xl gap-5 px-5 pb-32 md:px-8 lg:grid-cols-[300px_1fr_340px] lg:pb-8">
+    <div className="mx-auto grid w-full max-w-6xl gap-5 px-5 pb-28 md:px-8 lg:grid-cols-[300px_1fr_340px] lg:pb-8">
       <div className="order-2 flex flex-col gap-5 lg:order-1">
         <div className="rounded-card border border-line bg-surface px-5 py-7 max-lg:hidden">
           <MicButton
@@ -229,7 +229,8 @@ function Session({ bookings, latestReference, onBooking }: SessionProps) {
               {micState === "idle" ? "Tap to talk to Priya" : "Tap the square to end"}
             </p>
           </div>
-          <MobileButton
+          <MicButton
+            compact
             state={micState}
             onStart={handleStart}
             onStop={handleStop}
@@ -248,14 +249,6 @@ const LABEL_SHORT: Record<MicState, string> = {
   listening: "Listening",
   speaking: "Priya is speaking",
 };
-
-function MobileButton(props: React.ComponentProps<typeof MicButton>) {
-  return (
-    <div className="scale-[0.42] origin-right -my-14">
-      <MicButton {...props} />
-    </div>
-  );
-}
 
 function Controls({
   active,

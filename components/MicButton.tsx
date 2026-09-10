@@ -23,9 +23,18 @@ type Props = {
   onStop: () => void;
   getInputVolume: () => number;
   getOutputVolume: () => number;
+  /** Compact renders just the button and its ring, for the mobile bar. */
+  compact?: boolean;
 };
 
-export default function MicButton({ state, onStart, onStop, getInputVolume, getOutputVolume }: Props) {
+export default function MicButton({
+  state,
+  onStart,
+  onStop,
+  getInputVolume,
+  getOutputVolume,
+  compact = false,
+}: Props) {
   const ringRef = useRef<HTMLSpanElement>(null);
   const frame = useRef<number>(0);
 
@@ -55,6 +64,29 @@ export default function MicButton({ state, onStart, onStop, getInputVolume, getO
   const active = state !== "idle";
   // Listening rings in muted grey-green; Priya speaking rings in the accent.
   const ringColor = state === "speaking" ? "var(--accent)" : "var(--panel-muted)";
+
+  if (compact) {
+    return (
+      <div className="relative flex h-16 w-16 shrink-0 items-center justify-center">
+        <span
+          ref={ringRef}
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-full border-2"
+          style={{ borderColor: ringColor, opacity: active ? 0.5 : 0 }}
+        />
+        <button
+          type="button"
+          onClick={active ? onStop : onStart}
+          aria-label={active ? "End the call" : "Start talking to Priya"}
+          className={`flex h-[54px] w-[54px] items-center justify-center rounded-full bg-ink text-page transition-transform duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:scale-95 ${
+            state === "connecting" ? "pulse" : ""
+          }`}
+        >
+          {active ? <EndIcon /> : <MicIcon />}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center gap-4">

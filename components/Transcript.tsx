@@ -34,7 +34,7 @@ export default function Transcript({ conversation, connected, onPickPrompt }: Pr
 
       <div ref={scroller} onScroll={onScroll} className="flex-1 space-y-3 overflow-y-auto px-5 py-4">
         {conversation.length === 0 ? (
-          <div className="flex h-full flex-col justify-center gap-5 py-4">
+          <div className="flex flex-col gap-5 py-2">
             <p className="text-[14px] leading-relaxed text-muted">
               {connected
                 ? "Say hello — Priya is listening."
