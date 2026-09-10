@@ -85,9 +85,22 @@ npm run verify:secrets # fails if any secret appears in the client bundle
 npm run verify:agent   # sends the real Settings to Deepgram, expects SettingsApplied
 ```
 
-`verify:agent` is the useful one when changing the voice, prompt or function
-definitions: it validates the whole payload against Deepgram without needing a
-microphone. It opens a socket for about a second, so the cost is negligible.
+```bash
+npm run probe            # holds a real conversation with the agent and grades the answers
+```
+
+`probe` is the important one when changing the prompt. It opens a real Voice
+Agent session, drives it with `InjectUserMessage`, and checks what comes back
+across 18 cases: price accuracy, invented services and staff, off-topic
+refusal, four prompt-injection attempts, and name confirmation. Function calls
+during the probe hit the deployed API, so availability behaves as it does for a
+real caller. No microphone involved, and a full run costs a few paise.
+
+Every reply is also scanned for markers that would mean the prompt or the
+plumbing leaked — model names, function names, provider names, "api key".
+
+`verify:agent` is the lighter check: it validates the Settings payload against
+Deepgram without holding a conversation.
 
 ---
 
@@ -184,6 +197,17 @@ including crawlers.
 it today's date in IST, and every date it returns is validated server-side.
 India has one fixed UTC offset and no daylight saving, so `lib/availability.ts`
 uses a +05:30 constant rather than a timezone library.
+
+**Scope guard.** Priya answers clinic questions only. Anything unrelated gets
+"Sorry, I can only help with appointments and questions about the clinic". The
+subtle part is that a question about a treatment we do not offer, or a dentist
+who does not work here, is *still* a clinic question and must get a real answer
+plus a callback — not the refusal. A blanket scope rule over-fires on exactly
+those cases; `npm run probe` covers both.
+
+**Prompt secrecy.** The prompt, configuration, tooling and any credentials are
+never repeated, summarised, translated or hinted at, including for callers
+claiming to be developers or asking her to enter a debug mode.
 
 **Theme.** Dark by default, matching nexbuilt.in, with the same header toggle
 and the same blocking inline script to prevent a flash. All colours come from

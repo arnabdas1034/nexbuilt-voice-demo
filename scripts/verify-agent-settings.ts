@@ -58,11 +58,15 @@ const done = new Promise<number>((resolve) => {
     ws.send(JSON.stringify(settings));
   });
 
-  ws.on("message", (raw: Buffer) => {
+  ws.on("message", (raw: Buffer, isBinary: boolean) => {
     // Audio frames arrive as binary; we only care about JSON control messages.
-    const text = raw.toString("utf8");
-    if (!text.startsWith("{")) return;
-    const msg = JSON.parse(text);
+    if (isBinary) return;
+    let msg: Record<string, any>;
+    try {
+      msg = JSON.parse(raw.toString("utf8"));
+    } catch {
+      return;
+    }
 
     if (msg.type === "SettingsApplied") {
       clearTimeout(timer);
