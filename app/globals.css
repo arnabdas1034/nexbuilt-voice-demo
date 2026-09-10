@@ -1,0 +1,164 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens lifted from nexbuilt.in so the demo reads as the same brand.
+ * Dark is the default and ships in the markup; the light values mirror the
+ * main site's light theme. Never hardcode a colour in a component.
+ */
+
+:root,
+[data-theme="dark"] {
+  --base: #0d1011;
+  --ink: #ffffff;
+  --accent: #e6b496;
+  --accent-ink: #241b16;
+  --panel: #181c1e;
+  --panel-alt: #23292c;
+  --panel-ink: #ffffff;
+  --panel-muted: #c5ccce;
+  --line: #51595d;
+  --soft-line: #555b5e;
+  --header: #0d1011ed;
+  --wash: #00000094;
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --base: #f2f3f1;
+  --ink: #171a1b;
+  --accent: #86432b;
+  --accent-ink: #ffffff;
+  --panel: #f8f9f7;
+  --panel-alt: #eaeeeb;
+  --panel-ink: #171a1b;
+  --panel-muted: #424c4b;
+  --line: #8b9591;
+  --soft-line: #7c8581;
+  --header: #f5f7f4f0;
+  --wash: #ffffffa3;
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-page: var(--base);
+  --color-ink: var(--ink);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-surface: var(--panel);
+  --color-surface-alt: var(--panel-alt);
+  --color-surface-ink: var(--panel-ink);
+  --color-muted: var(--panel-muted);
+  --color-line: var(--line);
+  --color-soft-line: var(--soft-line);
+  --color-header: var(--header);
+  --color-wash: var(--wash);
+
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-serif: Georgia, serif;
+
+  --radius-pill: 99px;
+  --radius-card: 18px;
+  --radius-card-lg: 28px;
+  --radius-chip: 16px;
+}
+
+html {
+  background: var(--base);
+}
+
+body {
+  background: var(--base);
+  color: var(--ink);
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The header border is the one place the main site uses color-mix. */
+.brand-hairline {
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 15%, transparent);
+}
+
+.brand-divider {
+  border-color: color-mix(in srgb, var(--ink) 15%, transparent);
+}
+
+/* Matches the main site's sticky, blurred header. */
+.brand-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  min-height: 78px;
+  background: var(--header);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+@media (min-width: 761px) {
+  .brand-header {
+    min-height: 100px;
+  }
+}
+
+.wordmark {
+  font-weight: 600;
+  letter-spacing: -1.8px;
+}
+
+/* A new booking should announce itself — this is the payoff of the demo. */
+@keyframes booking-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(2px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes booking-flash {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  25% {
+    box-shadow: 0 0 0 3px var(--accent);
+  }
+}
+
+.booking-enter {
+  animation:
+    booking-in 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both,
+    booking-flash 1400ms ease-out 200ms both;
+}
+
+@keyframes soft-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.pulse {
+  animation: soft-pulse 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booking-enter,
+  .pulse {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+}

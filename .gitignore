@@ -1,0 +1,12 @@
+# Secrets — never commit. .env.example is the only env file that ships.
+.env
+.env.*
+!.env.example
+
+node_modules
+.next
+out
+build
+.vercel
+.DS_Store
+*.log
